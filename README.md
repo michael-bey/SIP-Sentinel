@@ -2,6 +2,8 @@
 
 **AI-powered scam detection and response system that automatically deploys conversational agents to waste scammers' time.**
 
+![SIPSentinel Dashboard](homepage.png)
+
 ## Problem Statement
 
 Scammers increasingly target victims through phone calls and text messages, impersonating legitimate companies like crypto exchanges (Coinbase, Kraken) and tech support (Microsoft, Apple). These scams cost billions annually and harm vulnerable populations. Traditional blocking approaches are reactive and ineffective against evolving tactics.
