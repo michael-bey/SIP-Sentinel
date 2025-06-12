@@ -1,0 +1,12 @@
+{
+  "_comment": "This file stores VAPI agent IDs for different scam types",
+  "_note": "Agent IDs are automatically populated when you run 'npm run create-agents'",
+  "coinbase": "your-coinbase-agent-id-here",
+  "kraken": "your-kraken-agent-id-here", 
+  "binance": "your-binance-agent-id-here",
+  "microsoft": "your-microsoft-agent-id-here",
+  "apple": "your-apple-agent-id-here",
+  "google": "your-google-agent-id-here",
+  "amazon": "your-amazon-agent-id-here",
+  "paypal": "your-paypal-agent-id-here"
+}

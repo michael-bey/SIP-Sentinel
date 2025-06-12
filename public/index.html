@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPSentinel - AI Scam Detection Dashboard</title>
+    <link rel="stylesheet" href="styles.css?v=20241220-1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1>SIPSentinel</h1>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot active" id="status-dot"></div>
+                <span id="status-text">Active & Monitoring</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard">
+            <!-- Status Panel -->
+            <section class="status-panel">
+                <div class="status-card honeypot-card" id="honeypot-number">
+                    <div class="card-icon">
+                        <i class="fas fa-phone-volume"></i>
+                    </div>
+                    <div class="card-content">
+                        <h2>Honeypot Number</h2>
+                        <div class="honeypot-display">
+                            <span class="honeypot-number" id="honeypot-number-display">Loading...</span>
+                            <button class="copy-btn" id="copy-honeypot-btn" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="honeypot-status">Ready to catch scams</div>
+                    </div>
+                </div>
+
+                <div class="status-card" id="detection-status">
+                    <div class="card-icon">
+                        <i class="fas fa-radar"></i>
+                    </div>
+                    <div class="card-content">
+                        <h2>Detection Status</h2>
+                        <div class="status-display">
+                            <div class="pulse-animation"></div>
+                            <span class="status-value">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card" id="scams-detected">
+                    <div class="card-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="card-content">
+                        <h2>Scams Detected</h2>
+                        <div class="counter">
+                            <span class="counter-value" id="scam-counter">0</span>
+                            <span class="counter-label">This Week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card" id="active-calls">
+                    <div class="card-icon" id="active-calls-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="card-content">
+                        <h2>Active Calls</h2>
+                        <div class="counter">
+                            <span class="counter-value" id="call-counter">0</span>
+                            <span class="counter-label">In Progress</span>
+                        </div>
+                        <div class="live-calls-container" id="live-calls-container" style="display: none;">
+                            <!-- Live call items will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Live Detection Visualization -->
+            <section class="visualization-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-chart-line"></i> Live Detection</h2>
+                    <div class="panel-controls">
+                        <button id="test-detection-btn" class="action-btn test-btn" title="Simulate a scam detection">
+                            <i class="fas fa-vial"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="visualization-container">
+                    <canvas id="detection-canvas"></canvas>
+                    <div class="detection-overlay" id="detection-overlay">
+                        <div class="detection-message" id="detection-message">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Monitoring for scam calls...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- Recent Scams Panel -->
+            <section class="recent-scams-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-history"></i> Recent Scam Calls</h2>
+                    <div class="panel-controls">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="scam_voicemail">Scam Voicemails</button>
+                        <button class="filter-btn" data-filter="agent_conversation">Agent Calls</button>
+                        <button class="filter-btn" data-filter="crypto_exchange">Crypto</button>
+                        <button class="filter-btn" data-filter="it_support">IT Support</button>
+                        <button class="filter-btn" data-filter="banking">Banking</button>
+                    </div>
+                </div>
+
+                <div class="scam-calls-container" id="scam-calls-container">
+                    <!-- Scam call items will be added dynamically -->
+                </div>
+            </section>
+
+            <!-- Agent Leaderboard Panel -->
+            <section class="leaderboard-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-trophy"></i> Agent Leaderboard</h2>
+                    <button id="refresh-leaderboard-btn" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="leaderboard-container" id="leaderboard-container">
+                    <div class="loading-message">Loading leaderboard...</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Floating Debug Button -->
+        <button id="debug-toggle-btn" class="debug-toggle-btn" title="Toggle Debug Panel">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Debug Panel (Bottom) -->
+        <div id="debug-panel" class="debug-panel collapsed">
+            <div class="debug-panel-header">
+                <div class="debug-panel-title">
+                    <i class="fas fa-bug"></i>
+                    <h3>Debug & VAPI Management</h3>
+                </div>
+                <div class="debug-panel-controls">
+                    <button id="refresh-vapi-btn" class="debug-btn" title="Refresh VAPI data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button id="collapse-debug-btn" class="debug-btn" title="Collapse Panel">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="debug-panel-content">
+                <div class="vapi-controls">
+                    <button id="list-assistants-btn" class="vapi-btn">
+                        <i class="fas fa-users"></i> List Assistants
+                    </button>
+                    <button id="list-phone-numbers-btn" class="vapi-btn">
+                        <i class="fas fa-phone"></i> Phone Numbers
+                    </button>
+                    <button id="list-vapi-calls-btn" class="vapi-btn">
+                        <i class="fas fa-history"></i> VAPI Calls
+                    </button>
+                    <button id="find-agent-btn" class="vapi-btn">
+                        <i class="fas fa-search"></i> Find Agent
+                    </button>
+                    <button id="get-analytics-btn" class="vapi-btn">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </button>
+                    <button id="test-call-btn" class="vapi-btn primary">
+                        <i class="fas fa-phone-alt"></i> Test Call
+                    </button>
+                </div>
+
+                <div class="vapi-results" id="vapi-results" style="display: none;">
+                    <div class="results-header">
+                        <h3 id="results-title">Results</h3>
+                        <div class="results-privacy-notice">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Phone numbers redacted for privacy</span>
+                        </div>
+                        <button id="close-results-btn" class="close-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="results-content">
+                        <pre id="results-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="live-call-template">
+        <div class="live-call-item">
+            <div class="live-call-status">
+                <div class="status-indicator"></div>
+                <div class="status-text"></div>
+            </div>
+            <div class="live-call-info">
+                <div class="call-type"></div>
+                <div class="call-details">
+                    <span class="caller-info"></span>
+                    <span class="call-duration">00:00</span>
+                </div>
+            </div>
+            <div class="live-call-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="call-stage-indicator">
+                    <span class="stage-text"></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="scam-call-template">
+        <div class="scam-call-item">
+            <div class="call-header">
+                <div class="call-header-left">
+                    <button class="action-btn play-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <div class="call-title">
+                        <div class="company-tag"></div>
+                        <div class="scam-type-tag"></div>
+                    </div>
+                </div>
+                <div class="call-header-right">
+                    <div class="call-time"></div>
+                    <div class="call-numbers">
+                        <div class="original-caller" style="display: none;">
+                            <i class="fas fa-phone-alt"></i>
+                            <span class="caller-label">From:</span>
+                            <span class="caller-number"></span>
+                        </div>
+                        <div class="callback-number" style="display: none;">
+                            <i class="fas fa-phone"></i>
+                            <span class="callback-label">Callback:</span>
+                            <span class="callback-number-text"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="call-waveform-container">
+                <div class="call-waveform">
+                    <canvas class="waveform-canvas"></canvas>
+                    <div class="waveform-timestamps">
+                        <span class="timestamp-start">0:00</span>
+                        <span class="timestamp-end">0:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="call-details">
+                <div class="call-message-container">
+                    <div class="call-message-header">
+                        <h3><i class="fas fa-file-alt"></i> Transcript</h3>
+                        <div class="confidence-meter">
+                            <div class="confidence-label">Confidence:</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill"></div>
+                            </div>
+                            <div class="confidence-value"></div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Section -->
+                    <div class="summary-section" style="display: none;">
+                        <div class="section-header">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Summary</span>
+                        </div>
+                        <div class="summary-content"></div>
+                    </div>
+
+                    <!-- Success Evaluation Section -->
+                    <div class="success-section" style="display: none;">
+                        <div class="section-header">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Success Evaluation</span>
+                        </div>
+                        <div class="success-content"></div>
+                    </div>
+
+                    <!-- Transcript Content -->
+                    <div class="call-message"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="app.js?v=20241220-1"></script>
+</body>
+</html>

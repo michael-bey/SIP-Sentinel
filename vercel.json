@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/dashboard", "destination": "/api/dashboard" },
+    { "source": "/api/live-updates", "destination": "/api/live-updates" },
+    { "source": "/api/queue-worker", "destination": "/api/queue-worker" },
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/test-telegram-notification", "destination": "/api/index" },
+    { "source": "/test-microsoft-callback", "destination": "/api/index" },
+    { "source": "/test-coinbase-callback", "destination": "/api/index" },
+    { "source": "/vapi/:path*", "destination": "/api/index" },
+    { "source": "/honeypot-number", "destination": "/api/index" },
+    { "source": "/recording-status", "destination": "/api/index?path=twilio-webhook&type=recording-status" },
+    { "source": "/transcription", "destination": "/api/index?path=twilio-webhook&type=transcription" },
+    { "source": "/voice", "destination": "/api/index?path=twilio-webhook&type=voice" },
+    { "source": "/sms", "destination": "/api/index?path=twilio-webhook&type=sms" },
+    { "source": "/api/:path*", "destination": "/api/index" }
+  ],
+  "functions": {
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/dashboard",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=30, stale-while-revalidate=60"
+        }
+      ]
+    },
+    {
+      "source": "/health",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
