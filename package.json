@@ -53,7 +53,7 @@
     "@upstash/qstash": "^2.8.1",
     "@upstash/redis": "^1.35.0",
     "@vapi-ai/server-sdk": "^0.8.1",
-    "axios": "^1.9.0",
+    "axios": "^1.13.2",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
